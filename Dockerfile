@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7
 # ---- builder ---------------------------------------------------------------
-FROM node:22-bookworm-slim AS builder
+FROM node:25-bookworm-slim AS builder
 ENV PNPM_HOME=/pnpm PATH=/pnpm:$PATH CI=true
 # better-sqlite3 falls back to a source build when no prebuilt binary matches.
 RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ ca-certificates \
@@ -15,7 +15,7 @@ RUN pnpm deploy --filter contextscope --prod /out \
   && mkdir -p /out/web && cp -r apps/web/dist /out/web/dist
 
 # ---- runtime ---------------------------------------------------------------
-FROM node:22-bookworm-slim
+FROM node:25-bookworm-slim
 ENV NODE_ENV=production \
     CONTEXTSCOPE_DATA_DIR=/data \
     CONTEXTSCOPE_HOST=0.0.0.0 \
