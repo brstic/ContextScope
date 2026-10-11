@@ -13,6 +13,7 @@ Change one base URL — see where every token goes, why your cache misses, and w
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript&logoColor=white)
 ![pnpm](https://img.shields.io/badge/pnpm-workspace-f69220?logo=pnpm&logoColor=white)
 ![Privacy](https://img.shields.io/badge/telemetry-none-8b5cf6)
+[![Made with Ahoy](https://img.shields.io/badge/made%20with-Ahoy%20%E2%9B%B5-0ea5e9)](https://ahoy.sparkcan.com)
 
 [Quick start](#-quick-start) · [Features](#-features) · [Providers](#-supported-providers) · [Privacy](#-privacy) · [Docs](#-documentation)
 
@@ -287,6 +288,8 @@ PRs are welcome! 🎉 See [CONTRIBUTING.md](CONTRIBUTING.md) for how to add a pr
 <div align="center">
 
 **[MIT](LICENSE)** · Made with ☕ and a lot of tokens
+
+⛵ Proudly made with **[Ahoy](https://ahoy.sparkcan.com)**
 
 ⭐ If ContextScope saved you money, give it a star!
 

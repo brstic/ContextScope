@@ -30,7 +30,7 @@ jobs:
       - run: pnpm test:web
       - run: pnpm build
       - name: Install Playwright Chromium
-        run: pnpm dlx playwright install --with-deps chromium
+        run: pnpm exec playwright install --with-deps chromium
       - name: E2E smoke (CLI start, mock upstreams, proxy byte fidelity, live feed, no secret leaks)
         run: pnpm test:e2e
       - name: Dashboard check (every page, desktop + phone, dark + light, all controls)
