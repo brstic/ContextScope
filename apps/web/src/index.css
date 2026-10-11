@@ -1,0 +1,161 @@
+@import 'tailwindcss';
+
+/* Dark mode is driven by a class on <html> (set by src/lib/theme.ts). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Theme tokens. Raw values live in CSS variables switched by the class on <html>;
+ * Tailwind utilities (bg-panel, text-muted, bg-cache-read, …) map to them via @theme inline.
+ * Signal colours carry meaning only: cache read / cache write / uncached input / output /
+ * reasoning / error / success. Light-mode values are darkened for AA contrast.
+ */
+:root,
+html.light {
+  color-scheme: light;
+  --bg: #f7f8fa;
+  --panel: #ffffff;
+  --raised: #f0f2f5;
+  --border: #dde2e8;
+  --text: #111827;
+  --muted: #5b6675;
+  --ring: #3e5bd9;
+  --cache-read: #0a7469;
+  --cache-write: #9a5d05;
+  --uncached: #3e5bd9;
+  --output: #b9305f;
+  --reasoning: #7d6b33;
+  --error: #c42f2b;
+  --success: #147545;
+  --hatch: rgb(255 255 255 / 0.55);
+  /* Context segment kinds: muted, non-signal tones. */
+  --k-tool: #6f7f96;
+  --k-system: #8c8a5a;
+  --k-developer: #6f8c6a;
+  --k-user: #5f7aa8;
+  --k-assistant: #9a7b6a;
+  --k-toolcall: #5f8c88;
+  --k-toolresult: #7d8fa8;
+  --k-document: #a08852;
+  --k-media: #94807a;
+  --k-other: #9aa3ad;
+}
+
+html.dark {
+  color-scheme: dark;
+  --bg: #0e1116;
+  --panel: #151a21;
+  --raised: #1c232c;
+  --border: #2a323d;
+  --text: #e6eaf0;
+  --muted: #8b97a6;
+  --ring: #6e8bff;
+  --cache-read: #2bc7b4;
+  --cache-write: #e9a23b;
+  --uncached: #6e8bff;
+  --output: #f0719b;
+  --reasoning: #d8c79a;
+  --error: #f25f5c;
+  --success: #5bd69a;
+  --hatch: rgb(14 17 22 / 0.5);
+  --k-tool: #5d6b7e;
+  --k-system: #8a8760;
+  --k-developer: #6b8566;
+  --k-user: #7189b5;
+  --k-assistant: #9c8272;
+  --k-toolcall: #5e8d89;
+  --k-toolresult: #7a8aa2;
+  --k-document: #a48d5b;
+  --k-media: #8f7c76;
+  --k-other: #6b7480;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-panel: var(--panel);
+  --color-raised: var(--raised);
+  --color-border: var(--border);
+  --color-fg: var(--text);
+  --color-muted: var(--muted);
+  --color-ring: var(--ring);
+  --color-cache-read: var(--cache-read);
+  --color-cache-write: var(--cache-write);
+  --color-uncached: var(--uncached);
+  --color-output: var(--output);
+  --color-reasoning: var(--reasoning);
+  --color-error: var(--error);
+  --color-success: var(--success);
+  --font-sans: ui-sans-serif, system-ui, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'JetBrains Mono', 'SF Mono', Menlo, Consolas, monospace;
+  --radius-panel: 6px;
+  --radius-control: 4px;
+}
+
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--border);
+  }
+  html,
+  body {
+    background: var(--bg);
+    color: var(--text);
+  }
+  body {
+    font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 1px;
+  }
+  .num,
+  .font-mono {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+@layer components {
+  .num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+  /* Estimated (not provider-reported, not exact) parts of the context strip. */
+  .hatch {
+    background-image: repeating-linear-gradient(135deg, transparent 0 4px, var(--hatch) 4px 5px);
+  }
+}
+
+@keyframes cs-pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+.cs-pulse {
+  animation: cs-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes cs-flash {
+  0% {
+    background: color-mix(in srgb, var(--cache-write) 30%, transparent);
+  }
+  100% {
+    background: transparent;
+  }
+}
+.cs-flash {
+  animation: cs-flash 2.4s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

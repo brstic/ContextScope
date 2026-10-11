@@ -1,0 +1,13 @@
+# Task: finish apps/web
+
+A previous agent built apps/web per docs/tasks/web.md (read it; it is the full spec). It typechecks, its 9 tests pass and `npx vite build` succeeds. Not done yet:
+1. Run `npx eslint apps/web` from root (`export PATH=/work/.tools/bin:$PATH`) and fix all errors.
+2. Resolve the API gaps it reported by matching the server contract now being implemented (see docs/tasks/server-api.md):
+   - /api/events accepts `?token=` (keep that).
+   - Settings base URLs: build from `window.location.origin + routePrefix` (+ `/v1` only for protocol openai), since the dashboard is served by the same server.
+   - Overview: send `provider` and `model` filters too (add the two selects from /api/filters).
+3. Write `apps/web/scripts/dev-mock-server.mjs` (plain node:http, no deps) serving realistic JSON for EVERY endpoint in docs/tasks/web.md shaped exactly as packages/shared/src/api.ts (include nulls in some fields, demo:true in health, an SSE /api/events that emits a request.completed every 2 s and heartbeats), plus a Playwright check script `apps/web/scripts/check.mjs` (playwright is globally available: `require('playwright')` / import with `createRequire`; chromium executablePath = process.env.CHROME_PATH) that: starts nothing itself; visits every route (/, /requests, /requests/<id>, /sessions, /sessions/<id>, /context, /cache, /costs, /optimizations, /compare?a=..&b=.., /settings) at 1440×900 and 390×844, in dark and light; collects console errors and failed requests; asserts `document.documentElement.scrollWidth <= window.innerWidth + 1`; saves full-page screenshots to apps/web/shots/<route>-<w>-<theme>.png; prints a summary and exits non-zero on problems.
+   Run in ONE shell command: `cd apps/web && npx vite build && (node scripts/dev-mock-server.mjs & echo $! > /tmp/m.pid) ; (npx vite preview --port 4173 --strictPort & echo $! > /tmp/p.pid); sleep 4; node scripts/check.mjs; kill $(cat /tmp/m.pid) $(cat /tmp/p.pid)` — /tmp may not be writable: use pid files inside apps/web instead.
+4. Fix everything the check finds (overflow, console errors, broken charts, empty panels that should show data). Make sure charts render (Recharts with CSS variables), tables scroll inside panels on 390 px, the sidebar becomes a top bar + slide-over menu on phones, and light mode has AA contrast for text.
+5. Final: `cd apps/web && npx tsc -p tsconfig.json --noEmit && npx vitest run && npx vite build`, and `npx eslint apps/web` from root, all clean.
+Write only in apps/web. Do not commit. Be efficient. REPORT: what you changed, check.mjs summary output (pages × widths × themes, errors), screenshot paths, test/build results.

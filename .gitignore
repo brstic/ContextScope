@@ -1,0 +1,24 @@
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+.tools/
+.contextscope/
+*.db
+*.db-wal
+*.db-shm
+shots/
+.preview/
+e2e/test-results/
+e2e/playwright-report/
+.env
+.DS_Store
+
+# local temp / tooling
+.ahoy/
+.tmp/
+.demo-live/
+.demo-shot/
+.contextscope-demo/
+.pnpm-store/
+*.log

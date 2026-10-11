@@ -1,0 +1,13 @@
+{
+  "files": [],
+  "references": [
+    { "path": "packages/shared" },
+    { "path": "packages/core" },
+    { "path": "packages/pricing" },
+    { "path": "packages/providers" },
+    { "path": "packages/analyzer" },
+    { "path": "packages/test-fixtures" },
+    { "path": "apps/server" },
+    { "path": "packages/cli" }
+  ]
+}

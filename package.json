@@ -1,0 +1,39 @@
+{
+  "name": "contextscope-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "description": "ContextScope — open-source LLM context profiler & prompt cache debugger",
+  "license": "MIT",
+  "type": "module",
+  "packageManager": "pnpm@12.11.2",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "build": "npm run build:ts && npm --prefix apps/web run build",
+    "build:ts": "tsc -b tsconfig.build.json",
+    "typecheck": "tsc -b tsconfig.build.json --noEmit false && npm --prefix apps/web run typecheck",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:web": "npm --prefix apps/web run test",
+    "test:e2e": "node scripts/e2e-smoke.mjs",
+    "bench": "node scripts/bench.mjs",
+    "start": "node packages/cli/dist/bin.js start",
+    "demo": "node packages/cli/dist/bin.js demo",
+    "clean": "node scripts/clean.mjs",
+    "check:ui": "node scripts/screenshots.mjs http://127.0.0.1:3377 shots && node scripts/click-check.mjs http://127.0.0.1:3377"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.36.0",
+    "@types/node": "^22.18.0",
+    "eslint": "^9.36.0",
+    "eslint-config-prettier": "^10.1.8",
+    "globals": "^16.4.0",
+    "prettier": "^3.6.2",
+    "typescript": "~5.9.2",
+    "typescript-eslint": "^8.44.0",
+    "vitest": "^3.2.4"
+  }
+}

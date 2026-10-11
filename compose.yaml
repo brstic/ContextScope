@@ -1,0 +1,27 @@
+services:
+  contextscope:
+    build: .
+    image: contextscope:local
+    restart: unless-stopped
+    ports:
+      # Local-only. For remote access put a TLS-terminating reverse proxy in front (docs/deployment.md).
+      - "127.0.0.1:3377:3377"
+    environment:
+      CONTEXTSCOPE_AUTH_TOKEN: ${CONTEXTSCOPE_AUTH_TOKEN:?set a token}
+      CONTEXTSCOPE_CAPTURE_MODE: ${CONTEXTSCOPE_CAPTURE_MODE:-metadata}
+    volumes:
+      - contextscope-data:/data
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3377/api/health',{headers:{authorization:'Bearer '+process.env.CONTEXTSCOPE_AUTH_TOKEN}}).then(r=>process.exit(r.ok?0:1),()=>process.exit(1))"
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+    stop_grace_period: 15s
+
+volumes:
+  contextscope-data:

@@ -1,0 +1,51 @@
+name: Bug report
+description: Something does not work as documented
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! **Never paste API keys, auth tokens or private prompts.**
+        Security issues: use private vulnerability reporting (see SECURITY.md).
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you do, what did you expect, what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. contextscope start\n2. ..."
+    validations:
+      required: true
+  - type: dropdown
+    id: provider
+    attributes:
+      label: Provider / endpoint
+      multiple: true
+      options:
+        - OpenAI Chat Completions
+        - OpenAI Responses
+        - Anthropic Messages
+        - Gemini
+        - OpenAI-compatible custom provider
+        - Not provider-specific
+  - type: input
+    id: version
+    attributes:
+      label: ContextScope version
+      placeholder: output of `contextscope --version`
+    validations:
+      required: true
+  - type: textarea
+    id: doctor
+    attributes:
+      label: "`contextscope doctor` output"
+      render: text
+  - type: input
+    id: env
+    attributes:
+      label: OS, Node version, install method (npm, Docker, source)

@@ -1,0 +1,101 @@
+{
+  "format": "contextscope.trace",
+  "version": 1,
+  "exportedAt": "2026-10-01T10:00:00.000Z",
+  "traces": [
+    {
+      "id": "sample-openai-1",
+      "provider": "openai",
+      "endpoint": "/v1/chat/completions",
+      "method": "POST",
+      "startedAt": "2026-10-01T09:00:00.000Z",
+      "durationMs": 820,
+      "ttfbMs": 410,
+      "httpStatus": 200,
+      "sessionId": "sample-session",
+      "request": {
+        "model": "gpt-4.1-mini",
+        "messages": [
+          { "role": "system", "content": "You are a concise support assistant for Acme Cloud Storage." },
+          { "role": "user", "content": "How do I rotate my storage access key?" }
+        ]
+      },
+      "response": {
+        "id": "chatcmpl-sample1",
+        "object": "chat.completion",
+        "created": 1790845200,
+        "model": "gpt-4.1-mini-2025-04-14",
+        "choices": [
+          {
+            "index": 0,
+            "message": { "role": "assistant", "content": "Open Settings → Keys, create a new key, update clients, then revoke the old one." },
+            "finish_reason": "stop"
+          }
+        ],
+        "usage": {
+          "prompt_tokens": 1240,
+          "completion_tokens": 24,
+          "total_tokens": 1264,
+          "prompt_tokens_details": { "cached_tokens": 1024 },
+          "completion_tokens_details": { "reasoning_tokens": 0 }
+        }
+      },
+      "state": "completed"
+    },
+    {
+      "id": "sample-anthropic-1",
+      "provider": "anthropic",
+      "endpoint": "/v1/messages",
+      "method": "POST",
+      "startedAt": "2026-10-01T09:02:00.000Z",
+      "durationMs": 1430,
+      "ttfbMs": 380,
+      "ttftMs": 520,
+      "httpStatus": 200,
+      "sessionId": "sample-session",
+      "request": {
+        "model": "claude-sonnet-4-5",
+        "max_tokens": 256,
+        "stream": true,
+        "system": [
+          { "type": "text", "text": "You review pull requests for correctness. Be specific.", "cache_control": { "type": "ephemeral" } }
+        ],
+        "messages": [{ "role": "user", "content": "Review: retry on every HTTP error." }]
+      },
+      "responseSse": "event: message_start\ndata: {\"type\":\"message_start\",\"message\":{\"id\":\"msg_sample1\",\"type\":\"message\",\"role\":\"assistant\",\"model\":\"claude-sonnet-4-5\",\"content\":[],\"stop_reason\":null,\"usage\":{\"input_tokens\":42,\"cache_creation_input_tokens\":0,\"cache_read_input_tokens\":2048,\"output_tokens\":1}}}\n\nevent: content_block_start\ndata: {\"type\":\"content_block_start\",\"index\":0,\"content_block\":{\"type\":\"text\",\"text\":\"\"}}\n\nevent: ping\ndata: {\"type\":\"ping\"}\n\nevent: content_block_delta\ndata: {\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":\"Do not retry 4xx validation errors.\"}}\n\nevent: content_block_stop\ndata: {\"type\":\"content_block_stop\",\"index\":0}\n\nevent: message_delta\ndata: {\"type\":\"message_delta\",\"delta\":{\"stop_reason\":\"end_turn\",\"stop_sequence\":null},\"usage\":{\"output_tokens\":12}}\n\nevent: message_stop\ndata: {\"type\":\"message_stop\"}\n\n",
+      "state": "completed"
+    },
+    {
+      "id": "sample-gemini-1",
+      "provider": "gemini",
+      "endpoint": "/v1beta/models/gemini-2.5-flash:generateContent",
+      "method": "POST",
+      "startedAt": "2026-10-01T09:04:00.000Z",
+      "durationMs": 960,
+      "httpStatus": 200,
+      "sessionId": "sample-session",
+      "request": {
+        "systemInstruction": { "parts": [{ "text": "Summarize release notes in three bullets." }] },
+        "contents": [{ "role": "user", "parts": [{ "text": "v2.1: faster uploads, new audit log, bug fixes." }] }]
+      },
+      "response": {
+        "candidates": [
+          {
+            "content": { "role": "model", "parts": [{ "text": "- Faster uploads\n- New audit log\n- Bug fixes" }] },
+            "finishReason": "STOP",
+            "index": 0
+          }
+        ],
+        "usageMetadata": {
+          "promptTokenCount": 640,
+          "cachedContentTokenCount": 512,
+          "candidatesTokenCount": 14,
+          "thoughtsTokenCount": 30,
+          "totalTokenCount": 684
+        },
+        "modelVersion": "gemini-2.5-flash"
+      },
+      "state": "completed"
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "name": "contextscope",
+  "version": "1.0.0",
+  "description": "Open-source LLM context profiler & prompt cache debugger",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "contextscope": "./dist/bin.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -b"
+  },
+  "dependencies": {
+    "@contextscope/server": "workspace:*",
+    "@contextscope/shared": "workspace:*",
+    "@contextscope/test-fixtures": "workspace:*",
+    "commander": "^14.0.1"
+  }
+}
