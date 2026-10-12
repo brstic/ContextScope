@@ -1,6 +1,9 @@
 import { afterEach, describe, expect, it } from 'vitest';
-import { gzipSync } from 'node:zlib';
+import { brotliCompressSync, gzipSync } from 'node:zlib';
+import { createFingerprinter } from '@contextscope/core';
+import { createPricing } from '@contextscope/pricing';
 import { fixtures } from '../../../packages/test-fixtures/src/fixtures.js';
+import { buildRecord, exchangeToInput } from '../src/pipeline/record.js';
 import { setup, call } from './proxy-helpers.js';
 
 const cleanups: (() => Promise<void>)[] = [];
@@ -72,6 +75,57 @@ describe('transparent proxy', () => {
       exchange.route.adapter.parseResponse(JSON.parse(exchange.responseBody!.toString()), exchange.match!)
         .usage.outputTokens,
     ).toBe(2);
+  });
+
+  it.each([
+    ['gzip', gzipSync],
+    ['br', brotliCompressSync],
+  ] as const)('records usage and cost for a %s-compressed JSON response', async (encoding, compress) => {
+    const plain = Buffer.from(
+      JSON.stringify({
+        id: 'chatcmpl-1',
+        object: 'chat.completion',
+        model: 'gpt-4.1-mini',
+        choices: [{ index: 0, message: { role: 'assistant', content: 'ok' }, finish_reason: 'stop' }],
+        usage: {
+          prompt_tokens: 2747,
+          completion_tokens: 25,
+          total_tokens: 2772,
+          prompt_tokens_details: { cached_tokens: 2560 },
+        },
+      }),
+    );
+    const wire = compress(plain);
+    const ctx = await setup((_req, res) => {
+      res.writeHead(200, {
+        'content-type': 'application/json',
+        'content-encoding': encoding,
+        'content-length': wire.length,
+      });
+      res.end(wire);
+    });
+    cleanups.push(ctx.close);
+    const body = Buffer.from(
+      JSON.stringify({ model: 'gpt-4.1-mini', messages: [{ role: 'user', content: 'hi' }] }),
+    );
+    const response = await call(ctx.url, '/openai/v1/chat/completions', body, {
+      'accept-encoding': 'gzip, br',
+    });
+    expect(response.body).toEqual(wire);
+    const exchange = await ctx.wait();
+    const { record } = buildRecord(exchangeToInput(exchange), {
+      pricing: createPricing(),
+      fingerprinter: createFingerprinter(Buffer.alloc(32, 1)),
+      maxSegments: 100,
+      includeContent: false,
+    });
+    expect(record.usage.source).toBe('reported');
+    expect(record.usage.complete).toBe(true);
+    expect(record.usage.totalInputTokens).toBe(2747);
+    expect(record.usage.cacheReadTokens).toBe(2560);
+    expect(record.usage.outputTokens).toBe(25);
+    expect(record.cost.totalNanoUsd).toBeGreaterThan(0);
+    expect(record.cost.actualCacheSavingsNanoUsd).toBeGreaterThan(0);
   });
 
   it('keeps /api JSON parsing and proxies unknown endpoints with metadata only', async () => {

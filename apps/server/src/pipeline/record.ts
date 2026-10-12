@@ -1,4 +1,3 @@
-import { brotliDecompressSync, gunzipSync, inflateSync } from 'node:zlib';
 import {
   buildSegments,
   redactJson,
@@ -21,8 +20,6 @@ import {
 } from '@contextscope/shared';
 import type { CapturedExchange } from '../types.js';
 
-/** Max bytes a compressed response may inflate to for analysis (bounded memory). */
-export const MAX_DECODED_RESPONSE_BYTES = 32 * 1024 * 1024;
 export const MAX_ERROR_MESSAGE_CHARS = 500;
 
 /** How the response is handed to buildRecord. */
@@ -167,32 +164,13 @@ const tryJson = (text: string): { ok: true; value: unknown } | { ok: false } => 
   }
 };
 
-/** Decode a raw response body per content-encoding (bounded); null when it cannot be decoded. */
-export const decodeBody = (
-  body: Buffer,
-  encoding: string | undefined,
-  maxBytes = MAX_DECODED_RESPONSE_BYTES,
-): Buffer | null => {
-  const enc = (encoding ?? '').toLowerCase().trim();
-  if (enc === '' || enc === 'identity') return body;
-  const opts = { maxOutputLength: maxBytes };
-  try {
-    if (enc === 'gzip' || enc === 'x-gzip') return gunzipSync(body, opts);
-    if (enc === 'br') return brotliDecompressSync(body, opts);
-    if (enc === 'deflate') return inflateSync(body, opts);
-  } catch {
-    return null;
-  }
-  return null; // unknown encoding (zstd, chained encodings…)
-};
-
 /** Classify a captured response body for buildRecord. */
 export const responseInputFromExchange = (ex: CapturedExchange): ResponseInput => {
   if (ex.streamResult) return { kind: 'parsed', parsed: ex.streamResult };
   if (!ex.responseBody || ex.responseBody.length === 0) return { kind: 'none' };
-  const decoded = decodeBody(ex.responseBody, ex.responseHeaders['content-encoding']);
-  if (!decoded) return { kind: 'none' };
-  const text = decoded.toString('utf8');
+  // ResponseObserver already stores the DECODED bytes (bounded) in responseBody; the
+  // content-encoding header describes the wire bytes, so decoding again would fail.
+  const text = ex.responseBody.toString('utf8');
   const ct = (ex.responseContentType ?? ex.responseHeaders['content-type'] ?? '').toLowerCase();
   const ok = ex.httpStatus === null || ex.httpStatus < 400;
   if (ct.includes('text/event-stream')) return { kind: 'sse', text };
